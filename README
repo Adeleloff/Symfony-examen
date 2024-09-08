@@ -3,6 +3,8 @@ Mon projet est un site internet pour des cours en ligne de coréen (dans le mêm
 
 - Dans mon projet, j'ai décidé de lier l'entité Teacher aux User. Un professeur sera forcément lié à un User. J'ai donc décidé de quand on est sur le formulaire d'ajout d'un professeur ça ajoute en faite un user et garde les infos pour ajouter un professeur qui les utilise un peu plus dans l'indexController.php
 
+- J'ai aussi fait un eventSubscriber pour hasher le mot de passer juste avant de l'enregistrer dans la bdd (juste avant de persist, un prePersist).
+
 - J'ai aussi décidé d'utiliser des messages flash plutôt que des vue de confirmation, même si j'aurais préféré des messages flash en javaScript.
 
 - Pour pouvoir upload des vidéos, j'ai du créer des contraintes de validation (video.php et videoValidator.php) car je n'en ai pas trouvé dans les vendor. C'est deux contraintes vérifie si c'est bien une vidéo, gére les erreurs potenciels, la présence du fichier, la lisibilité, une taille maximale, le type MIME spécifique aux vidéos, etc. Ce fichier a été généré par ChatGPT, avec quelques ajustements (ou pas mal) de ma part. Je l'ai aussi mis dans les deux fichiers, pour ne pas m'attribuer le travail.
