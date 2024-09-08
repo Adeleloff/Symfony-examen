@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Teacher;
 use App\Entity\User;
 use App\Form\RegistrationFormType;
+use App\Newsletter\MailConfirmation;
 use App\Repository\TeacherRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,18 +18,12 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 
 class TeacherController extends AbstractController
 {
-    
-    #[Route('/newsletter/confirmation', name: "newsletter_confirm")]
-    public function newsletterConfirm(): Response
-    {
-        return $this->render('index/newsletter_confirm.html.twig');
-    }
-
     #[Route('/teacher/registration', name: 'teacher_registration', methods: ['GET', 'POST'])]
     public function registerTeacher(
         Request $request, 
         EntityManagerInterface $entityManager,
-        SluggerInterface $slugger
+        SluggerInterface $slugger,
+        MailConfirmation $mailConfirmation
         ): Response
     {
         $user = new User();
@@ -79,18 +74,14 @@ class TeacherController extends AbstractController
             $entityManager->flush();
             $this->addFlash('success', 'Merci ! 🎉🎉 Votre inscription a bien été enregistré');
 
+            $mailConfirmation->sendTeacher($user);
+
             return $this->redirectToRoute('home_page');  // Redirection après succès 
         }
 
         return $this->render('index/registration.html.twig', [
             'registrationForm' => $form
         ]);
-    }
-
-    #[Route('/teacher/confirmation', name: "registration_confirm")]
-    public function registerConfirm(): Response
-    {
-        return $this->render('index/registration_confirm.html.twig');
     }
 
     #[Route('/teacher', name: 'teacher_list')]

@@ -13,6 +13,6 @@ Mon projet est un site internet pour des cours en ligne de coréen (dans le mêm
 
 - Il y a aussi deux images par défaut dans assets/images et dans public/uploads\teacher
 
-
+- Presence d'un mailer dans le projet ne pas oublier de le mettre dans le .env.local
 
 
