@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier un Enseignant{% endblock %}
+
+{% block body %}
+    <h1>Modifier un Enseignant</h1>
+
+    {{ include('teacher/_form.html.twig', {'button_label': 'Modifier'}) }}
+
+    <a href="{{ path('teacher_index') }}">Retourner à la liste des Enseignants</a>
+
+    {{ include('teacher/_delete_form.html.twig') }}
+{% endblock %}

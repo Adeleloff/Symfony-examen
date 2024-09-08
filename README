@@ -13,6 +13,6 @@ Mon projet est un site internet pour des cours en ligne de coréen (dans le mêm
 
 - Il y a aussi deux images par défaut dans assets/images et dans public/uploads\teacher
 
-- Presence d'un mailer dans le projet ne pas oublier de le mettre dans le .env.local
+- Présence d'un mailer dans le projet. Pour confirmer l'inscription à la newsletter ou l'inscription en tant que nouvelle enseignant. Ne pas oublier de mettre un MAILER_DSN dans le .env.local
 
 

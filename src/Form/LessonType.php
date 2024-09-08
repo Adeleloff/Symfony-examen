@@ -46,11 +46,11 @@ class LessonType extends AbstractType
             ->add('visible')
             ->add('teacher', EntityType::class, [
                 'class' => Teacher::class,
-                'choice_label' => 'id',
+                'choice_label' => 'lastName',
             ])
             ->add('subCategory', EntityType::class, [
                 'class' => SubCategory::class,
-                'choice_label' => 'id',
+                'choice_label' => 'name',
             ])
             ->add('Ajouter', SubmitType::class, [
                 'attr' => [

@@ -14,21 +14,22 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
+#[Route('/lesson')]
 class LessonController extends AbstractController
 {
-    #[Route('/lessons', name: 'lessons_list')]
+    #[Route('/', name: 'lesson_index')]
     public function list(LessonRepository $lessonRepository): Response
     {
-        $lessons = $lessonRepository->findAll();
+        // $lessons = $lessonRepository->findAll();
         // trier par date de création (plus récent ou plus vieux)
-        // $lessons = $lessonRepository->findBy([], ['createdAt' => 'DESC']);
+        $lessons = $lessonRepository->findBy([], ['createdAt' => 'DESC']);
 
         return $this->render('lesson/list.html.twig', [
             'lessons' => $lessons,
         ]);
     }
 
-    #[Route('/lessons/new', name: 'lessons_new', methods: ['GET', 'POST'])]
+    #[Route('/new', name: 'lesson_new', methods: ['GET', 'POST'])]
     public function newLesson(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -75,12 +76,41 @@ class LessonController extends AbstractController
             return $this->redirectToRoute('home_page');
         }
 
-        return $this->render('lesson/edit.html.twig', [
+        return $this->render('lesson/new.html.twig', [
             'form' => $form
         ]);
     }
 
-    #[Route('/lessons/{id}', name: 'lesson_item')]
+    #[Route('/edit/{id}', name: 'lesson_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, Lesson $lesson, EntityManagerInterface $entityManager): Response
+    {
+        $form = $this->createForm(LessonType::class, $lesson);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+
+            return $this->redirectToRoute('lesson_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('lesson/edit.html.twig', [
+            'lesson' => $lesson,
+            'form' => $form,
+        ]);
+    }
+
+    #[Route('/crud/{id}', name: 'lesson_delete', methods: ['POST'])]
+    public function delete(Request $request, Lesson $lesson, EntityManagerInterface $entityManager): Response
+    {
+        if ($this->isCsrfTokenValid('delete'.$lesson->getId(), $request->getPayload()->getString('_token'))) {
+            $entityManager->remove($lesson);
+            $entityManager->flush();
+        }
+
+        return $this->redirectToRoute('lesson_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/{id}', name: 'lesson_item')]
     public function item(Lesson $lesson): Response
     {
         return $this->render('lesson/item.html.twig', [
@@ -91,7 +121,7 @@ class LessonController extends AbstractController
 
     // Exemple: d'accés personnalisé pour certains contexts (affiche juste une page avec écrit statistiques)
     /*
-    #[Route('/lesson/stats', name:"lessons_stats")]
+    #[Route('/stats', name:"lesson_stats")]
     public function lessonsStats(): Response
     {
         if ($this->isGranted("ROLE_USER")){
