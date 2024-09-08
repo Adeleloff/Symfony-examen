@@ -97,7 +97,7 @@ class TeacherController extends AbstractController
     #[Route('/edit/{id}', name: 'teacher_edit', methods: ['GET', 'POST'])]
     public function editTeacher(
         Request $request, 
-        Teacher $teacher, 
+        Teacher $teacher,
         EntityManagerInterface $entityManager,
         SluggerInterface $slugger
     ): Response {
@@ -147,8 +147,8 @@ class TeacherController extends AbstractController
                 }
             }
 
-            $entityManager->persist($teacher);
             $entityManager->persist($user);
+            $entityManager->persist($teacher);
             $entityManager->flush();
 
             $this->addFlash('success', 'Les informations ont été mises à jour avec succès.');

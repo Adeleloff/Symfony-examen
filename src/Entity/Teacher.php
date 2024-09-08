@@ -49,6 +49,11 @@ class Teacher
         $this->lessons = new ArrayCollection();
     }
 
+    public function __toString()
+    {
+        return $this->lastName . " " . $this->firstName ;        
+    }
+
     public function getId(): ?int
     {
         return $this->id;

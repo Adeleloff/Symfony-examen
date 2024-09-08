@@ -38,6 +38,11 @@ class Lesson
     private ?SubCategory $subCategory = null;
 
 
+    public function __toString()
+    {
+        return $this->title;        
+    }
+
     public function getId(): ?int
     {
         return $this->id;
