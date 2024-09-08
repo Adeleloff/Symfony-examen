@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+  Nos professeurs
+{% endblock %}
+
+{% block body %}
+    <h1 class="text-4xl font-bold text-center my-6">Nos professeurs</h1>
+
+    <ul class="flex flex-col gap-2 justify-center">
+        {% for teacher in teachers %}
+        <li class="p-4 bg-footer text-black shadow-xl uppercase text-2xl">
+            <a href="{{ path('teacher_item', { id: teacher.id }) }}">{{ teacher.lastName }} {{ teacher.firstName }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <p><br>Vous voulez devenir Enseignant chez nous ? <br></p>
+    <a href="{{ path('teacher_registration') }}" class="">Inscrivez-vous ICI !</a>
+
+{% endblock %}

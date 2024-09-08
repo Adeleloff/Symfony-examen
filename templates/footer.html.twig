@@ -1,18 +1,28 @@
-<footer class="w-full bg-gray-100 py-16">
-  <div class="md:px-12 lg:px-28  pt-8">
-    <div class="container m-auto space-y-6 text-gray-600">
+<footer class="w-full bg-footer py-10">
+  <div class="md:px-12 lg:px-28">
+    <div class="container m-auto space-y-6 text-black">
+      <div class="m-auto flex w-max items-center justify-center space-x-4">
+        <a href="/" title="KoreanIsta" aria-label="koreanista">
+          <svg class="h-8 block mx-auto" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="-12 -12 24 24">
+            <path fill="#cd2e3a" d="M0-12a12 12 0 0 1 0 24z"/>
+            <path fill="#0047a0" d="M0-12a12 12 0 0 0 0 24A6 6 0 0 0 0 0z"/>
+            <circle cy="-6" fill="#cd2e3a" r="6"/>
+          </svg>
+          <span class="self-center text-2xl font-semibold whitespace-nowrap">KoreanIsta</span>
+        </a>
+      </div>
       <ul role="list" class="flex flex-col items-center justify-center gap-4 py-4 sm:flex-row sm:gap-8">
         <li role="listitem">
-          <a href="{{ path('home_page') }}" class="hover:text-blue-700">Accueil</a>
+          <a href="{{ path('home_page') }}" class="hover:text-gray-500">Accueil</a>
         </li>
         <li role="listitem">
-          <a href="{{ path('category_page') }}" class="hover:text-blue-700">Cours</a>
+          <a href="{{ path('category_list') }}" class="hover:text-gray-500">Cours</a>
         </li>
         <li role="listitem">
-          <a href="{{ path('teacher_page') }}" class="hover:text-blue-700">Nos Professeurs</a>
+          <a href="{{ path('teacher_list') }}" class="hover:text-gray-500">Nos Professeurs</a>
         </li>
         <li role="listitem">
-          <a href="{{ path('about_page') }}" class="hover:text-blue-700">À propos</a>
+          <a href="{{ path('about_page') }}" class="hover:text-gray-500">À propos</a>
         </li>
       </ul>
       <div class="m-auto flex w-max items-center justify-center space-x-4">

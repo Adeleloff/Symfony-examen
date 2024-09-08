@@ -21,10 +21,13 @@ class Lesson
     private ?string $content = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $video = null;
+    private ?string $videoFilename = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $createdAt = null;
+
+    #[ORM\Column]
+    private ?bool $visible = null;
 
     #[ORM\ManyToOne(inversedBy: 'lessons')]
     #[ORM\JoinColumn(nullable: false)]
@@ -33,6 +36,7 @@ class Lesson
     #[ORM\ManyToOne(inversedBy: 'lessons')]
     #[ORM\JoinColumn(nullable: false)]
     private ?SubCategory $subCategory = null;
+
 
     public function getId(): ?int
     {
@@ -63,14 +67,14 @@ class Lesson
         return $this;
     }
 
-    public function getVideo(): ?string
+    public function getVideoFilename(): ?string
     {
-        return $this->video;
+        return $this->videoFilename;
     }
 
-    public function setVideo(string $video): static
+    public function setVideoFilename(string $videoFilename): static
     {
-        $this->video = $video;
+        $this->videoFilename = $videoFilename;
 
         return $this;
     }
@@ -83,6 +87,18 @@ class Lesson
     public function setCreatedAt(\DateTimeInterface $createdAt): static
     {
         $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function isVisible(): ?bool
+    {
+        return $this->visible;
+    }
+
+    public function setVisible(bool $visible): static
+    {
+        $this->visible = $visible;
 
         return $this;
     }

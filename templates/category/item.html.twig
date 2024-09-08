@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+  Hello CategoryController!
+{% endblock %}
+
+{% block body %}
+  <h1 class="text-5xl text-center font-bold mb-8">{{ category.name }}</h1>
+
+  <ul class="flex flex-col gap-2 justify-center">
+        {% for subcategory in category.subcategories %}
+        <li class="p-4 bg-footer text-black shadow-xl uppercase text-2xl">
+            <a href="{{ path('subcategory_item', { id: subcategory.id }) }}">{{ subcategory.name }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

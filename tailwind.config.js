@@ -6,9 +6,15 @@ module.exports = {
     "./templates/**/*.html.twig",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        beige : "#FDFCF9",
+        footer : "#F9F6F0",
+        svg : "#0047a0", // couleur bleu du svg du logo
+        hoversvg : "#003680", // couleur légèrement plus 
+      },
+    },
   },
   plugins: [
-    require('flowbite/plugin')
   ],
 }

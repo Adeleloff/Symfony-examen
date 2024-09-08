@@ -1,0 +1,15 @@
+ <div class="group relative -mx-4 sm:-mx-8 p-6 sm:p-8 rounded-3xl bg-beige border border-transparent hover:border-gray-100 shadow-2xl shadow-transparent hover:shadow-gray-600/10 sm:gap-8 sm:flex transition duration-300 hover:z-10">
+    <div class="sm:w-2/6 rounded-3xl overflow-hidden transition-all duration-500 group-hover:rounded-xl">
+    <a href="{{ path('lesson_item', { id: lesson.id }) }}"><img src="https://images.unsplash.com/photo-1661749711934-492cd19a25c3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1674&q=80" alt="art cover" loading="lazy" width="1000" height="667" class="h-56 sm:h-full w-full object-cover object-top transition duration-500 group-hover:scale-105" /></a>
+  </div>
+
+  <div class="sm:p-2 sm:pl-0 sm:w-4/6">
+    <span class="mt-4 mb-2 inline-block font-medium text-gray-500 sm:mt-0">{{ lesson.createdAt|date('d F Y') }}</span>
+    <h3 class="text-2xl font-semibold text-black"><a href="{{ path('lesson_item', { id: lesson.id }) }}">{{ lesson.title }}</a></h3>
+    <p class="my-6 text-gray-600">Laudantium in, voluptates ex placeat quo harum aliquam totam, doloribus eum impedit atque...</p>
+
+    <div class="flex gap-4">
+      <a href="{{ path('subcategory_item', { id: lesson.subcategory.id }) }}" class="px-3 py-1 rounded-full border text-sm font-medium text-primary transition duration-300 hover:border-transparent hover:bg-primary hover:text-gray-400 border-gray-700 text-gray-900">{{ lesson.subcategory.name }}</a>
+    </div>
+  </div>
+</div>

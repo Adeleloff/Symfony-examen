@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
   <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>
       {% block title %}
         KoreanIsta
       {% endblock %}
     </title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%2240%22%20height=%2240%22%20viewBox=%22-12%20-12%2024%2024%22%3E%0A%20%20%20%20%3Cpath%20fill=%22%23cd2e3a%22%20d=%22M0-12a12%2012%200%200%201%200%2024z%22/%3E%0A%20%20%20%20%3Cpath%20fill=%22%230047a0%22%20d=%22M0-12a12%2012%200%200%200%200%2024A6%206%200%200%200%200%200z%22/%3E%0A%20%20%20%20%3Ccircle%20cy=%22-6%22%20fill=%22%23cd2e3a%22%20r=%226%22/%3E%0A%3C/svg%3E" />
     {% block stylesheets %}
 
     {% endblock %}
@@ -18,10 +19,34 @@
       {% endblock %}
     {% endblock %}
   </head>
-  <body class=" bg-gray-500">
+  <body class="bg-beige min-h-screen">
     <header>{{ include('nav.html.twig') }}</header>
 
-    <main class="max-w-screen-xl mx-auto">
+    <main class="py-20 max-w-screen-xl mx-auto">
+      {# FLASH MESSAGES #}
+      {% for type, messages in app.flashes(['success', 'info', 'warning', 'danger']) %}
+          {% for message in messages %}
+              {% set alertClass = '' %}
+              
+              {# Définir les classes en fonction du type d'alerte #}
+              {% if type == 'success' %}
+                  {% set alertClass = 'border' %}
+              {% elseif type == 'info' %}
+                  {% set alertClass = 'border' %}
+              {% elseif type == 'warning' %}
+                  {% set alertClass = 'border' %}
+              {% elseif type == 'danger' %}
+                  {% set alertClass = 'border' %}
+              {% endif %}
+
+              <div class="p-4 mb-4 rounded {{ alertClass }}" role="alert">
+                  {{ message }}
+              </div>
+          {% endfor %}
+      {% endfor %}
+
+
+
       {% block body %}
 
       {% endblock %}

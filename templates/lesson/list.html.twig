@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+  Hello ArticleController!
+{% endblock %}
+
+{% block body %}
+  <h1 class="text-5xl text-center font-bold">Leçons</h1>
+
+  <div>
+    <div class="py-12">
+      <div class="container m-auto px-6 text-gray-600 md:px-12 xl:px-6">
+        <div class="lg:mx-auto">
+          {% for lesson in lessons %}
+            {% include 'lesson/card.html.twig' with {'lesson': lesson} %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
