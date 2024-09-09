@@ -39,6 +39,5 @@ final class Version20240816131714 extends AbstractMigration
         $this->addSql('DROP TABLE lesson');
         $this->addSql('DROP TABLE sub_category');
         $this->addSql('DROP TABLE teacher');
-        $this->addSql('DROP TABLE messenger_messages');
     }
 }
