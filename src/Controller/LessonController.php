@@ -99,7 +99,7 @@ class LessonController extends AbstractController
         ]);
     }
 
-    #[Route('/crud/{id}', name: 'lesson_delete', methods: ['POST'])]
+    #[Route('/{id}', name: 'lesson_delete', methods: ['POST'])]
     public function delete(Request $request, Lesson $lesson, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$lesson->getId(), $request->getPayload()->getString('_token'))) {
