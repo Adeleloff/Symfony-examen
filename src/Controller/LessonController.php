@@ -95,7 +95,7 @@ class LessonController extends AbstractController
             throw $this->createAccessDeniedException('Vous ne pouvez pas modifier cette leçon.');
         }
 
-        $form = $this->createForm(LessonType::class, $lesson);
+        $form = $this->createForm(LessonType::class, $lesson, ['is_edit' => true]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

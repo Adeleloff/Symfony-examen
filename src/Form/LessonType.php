@@ -19,6 +19,9 @@ class LessonType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        // On récupère l'option 'is_edit' pour savoir si c'est un formulaire de modification
+        $isEdit = $options['is_edit'] ?? false;
+        
         $builder
             ->add('title', TextType::class, [
                 'label' => false, // Masque le label
@@ -51,19 +54,25 @@ class LessonType extends AbstractType
             ->add('subCategory', EntityType::class, [
                 'class' => SubCategory::class,
                 'choice_label' => 'name',
-            ])
-            ->add('Ajouter', SubmitType::class, [
+            ]);
+
+        // Si ce n'est pas un formulaire d'édition, on ajoute le champ d'ajout
+        if (!$isEdit) {
+            $builder->add('Ajouter', SubmitType::class, [
                 'attr' => [
                     'class' => 'bg-svg hover:bg-hoversvg font-bold py-2 px-4 rounded',
                 ],
             ]);
-        ;
+        };
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => Lesson::class,
+            'is_edit' => false,
         ]);
+
+        $resolver->setDefined(['is_edit']);
     }
 }
