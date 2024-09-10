@@ -178,7 +178,7 @@ class TeacherController extends AbstractController
         }
 
         return $this->render('teacher/edit.html.twig', [
-            'form' => $form->createView(),
+            'form' => $form,
             'teacher' => $teacher,
             'user' => $user
         ]);
@@ -187,34 +187,35 @@ class TeacherController extends AbstractController
     #[Route('/change-password', name: 'teacher_change_password', methods: ['GET', 'POST'])]
     public function changePassword(
         Request $request, 
-        UserPasswordHasherInterface $passwordHasher, 
+        UserPasswordHasherInterface $passwordHasher,
         EntityManagerInterface $entityManager,
         MailConfirmation $mailerService
-        ): Response
-    {
+    ): Response {
         /**
         * @var \App\Entity\User $user 
         */
-        // obliger de mettre cette annotation si non renvoi une instance de UserInterface et non de User
         $user = $this->getUser();
         $form = $this->createForm(ChangePasswordType::class);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            
             $currentPassword = $form->get('currentPassword')->getData();
+
+            // Vérification du mot de passe actuel
             if (!$passwordHasher->isPasswordValid($user, $currentPassword)) {
                 $form->get('currentPassword')->addError(new FormError('Le mot de passe actuel est incorrect.'));
+
             } else {
-                
+
                 $newPassword = $form->get('newPassword')->getData();
                 $confirmPassword = $form->get('confirmPassword')->getData();
 
                 if ($newPassword !== $confirmPassword) {
                     $form->get('confirmPassword')->addError(new FormError('Les deux mots de passe ne correspondent pas.'));
                 } else {
-                    
+                    // Assigner le nouveau mot de passe
                     $user->setPassword($newPassword);
+                    $entityManager->persist($user);
                     $entityManager->flush();
 
                     $this->addFlash('success', 'Le mot de passe a été modifié avec succès.');
@@ -226,10 +227,9 @@ class TeacherController extends AbstractController
         }
 
         return $this->render('teacher/change_password.html.twig', [
-            'passwordform' => $form,
+            'form' => $form->createView(),
         ]);
     }
-
 
     #[Route('/{id}', name: 'teacher_delete', methods: ['POST'])]
     public function delete(Request $request, EntityManagerInterface $entityManager): Response

@@ -6,12 +6,14 @@ use App\Entity\NewsletterEmail;
 use App\Entity\User;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class MailConfirmation
 {
     public function __construct(
         private MailerInterface $mailer,
-        private string $adminEmail
+        private string $adminEmail,
+        private UrlGeneratorInterface $urlGenerator
     ) {
     }
 
@@ -42,15 +44,18 @@ class MailConfirmation
 
     public function sendPasswordReset(User $user, string $resetToken)
     {
+        // Générer l'URL complète pour la réinitialisation du mot de passe
+        $resetUrl = $this->urlGenerator->generate('reset_password', ['token' => $resetToken], UrlGeneratorInterface::ABSOLUTE_URL);
+
+        // Créer et envoyer l'e-mail
         $email = (new Email())
             ->from($this->adminEmail)
             ->to($user->getEmail())
             ->subject('KoreanIsta - Réinitialisation de mot de passe')
             ->html(sprintf(
                 '<p>Bonjour,</p><p>Pour réinitialiser votre mot de passe, veuillez cliquer sur le lien suivant : 
-                <a href="%s/reset-password/%s">Réinitialiser mon mot de passe</a></p>',
-                $_SERVER['APP_URL'],
-                $resetToken
+                <a href="%s">Réinitialiser mon mot de passe</a></p>',
+                $resetUrl
             ));
 
         $this->mailer->send($email);

@@ -2,9 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\PasswordResetRequest;
 use App\Form\ForgottenPasswordType;
 use App\Form\ResetPasswordType;
 use App\Mail\MailConfirmation;
+use App\Repository\PasswordResetRequestRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -46,61 +48,82 @@ class SecurityController extends AbstractController
         MailConfirmation $mailerService, 
         TokenGeneratorInterface $tokenGenerator, 
         EntityManagerInterface $entityManager
-        ): Response
-    {
+    ): Response {
         $form = $this->createForm(ForgottenPasswordType::class);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $user = $userRepository->findOneByEmail($form->get('email')->getData());
 
-            if (!$user) {
-                $form->addError(new FormError('Aucun compte associé à cette adresse email.'));
-            } else {
+            if ($user) {
+                // Générer un token
                 $token = $tokenGenerator->generateToken();
-                $user->setResetToken($token);
+                
+                // Créer une nouvelle demande de réinitialisation
+                $passwordResetRequest = new PasswordResetRequest();
+                $passwordResetRequest->setUser($user);
+                $passwordResetRequest->setToken($token);
+                $passwordResetRequest->setExpiresAt(new \DateTime('+1 hour'));
+
+                // Sauvegarder dans la base de données
+                $entityManager->persist($passwordResetRequest);
                 $entityManager->flush();
 
+                // Envoyer un email avec le lien de réinitialisation
                 $mailerService->sendPasswordReset($user, $token);
 
-                $this->addFlash('success', 'Un email vous a été envoyé pour réinitialiser votre mot de passe.');
-                return $this->redirectToRoute('login');
+                return $this->render('security/forgot_password_confirmation.html.twig');
+            } else {
+                $this->addFlash('danger', 'Aucun utilisateur trouvé avec cet email.');
             }
+
+            return $this->redirectToRoute('login');
         }
 
-        return $this->render('security/reset_password.html.twig', [
-            'requestForm' => $form->createView(),
+        return $this->render('security/forgot_password.html.twig', [
+            'requestForm' => $form,
         ]);
     }
+
+
 
     #[Route('/reset-password/{token}', name: 'reset_password')]
     public function resetPassword(
         Request $request, 
-        string $token, 
-        UserRepository $userRepository, 
-        UserPasswordHasherInterface $passwordHasher, 
+        string $token,  
         EntityManagerInterface $entityManager,
-        MailConfirmation $mailerService
-        ): Response
-    {
-        $user = $userRepository->findOneByResetToken($token);
+        MailConfirmation $mailerService,
+        PasswordResetRequestRepository $passwordResetRequestRepository
+    ): Response {
+        // Chercher la demande de réinitialisation par le token
+        $passwordResetRequest = $passwordResetRequestRepository->findOneBy(['token' => $token]);
 
-        if (!$user) {
-            $this->addFlash('danger', 'Le lien est invalide.');
-            return $this->redirectToRoute('forgot_password');
+        if (!$passwordResetRequest || $passwordResetRequest->getExpiresAt() < new \DateTime()) {
+            $this->addFlash('danger', 'Le lien est invalide ou a expiré.');
+            return $this->render('security/invalid_token.html.twig');
         }
+
+        // Récupérer l'utilisateur associé
+        $user = $passwordResetRequest->getUser();
 
         $form = $this->createForm(ResetPasswordType::class);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Récupérer le nouveau mot de passe en clair
             $newPassword = $form->get('newPassword')->getData();
-            $user->setPassword($passwordHasher->hashPassword($user, $newPassword));
-            $user->setResetToken(null);
+
+            
+            $user->setPassword($newPassword);
+            $entityManager->persist($user);
+
+            // Supprimer le token de réinitialisation
+            $entityManager->remove($passwordResetRequest);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Votre mot de passe a bien été réinitialisé.');
             $mailerService->sendPasswordChanged($user);
+
+            $this->addFlash('success', 'Votre mot de passe a bien été réinitialisé.');
             return $this->redirectToRoute('login');
         }
 
@@ -109,4 +132,5 @@ class SecurityController extends AbstractController
             'token' => $token,
         ]);
     }
+
 }
