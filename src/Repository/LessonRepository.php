@@ -16,6 +16,15 @@ class LessonRepository extends ServiceEntityRepository
         parent::__construct($registry, Lesson::class);
     }
 
+    public function findBySearchQuery(string $query)
+    {
+        return $this->createQueryBuilder('l')
+            ->where('l.title LIKE :query')
+            ->setParameter('query', '%' . $query . '%')
+            ->getQuery()
+            ->getResult();
+    }
+
 //    /**
 //     * @return Lesson[] Returns an array of Lesson objects
 //     */
