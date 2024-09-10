@@ -3,23 +3,71 @@
 {% block title %}Mon Profil{% endblock %}
 
 {% block body %}
-    <h1>Mon Profil</h1>
+    <div class="max-w-4xl mx-auto py-8">
+        <h1 class="text-3xl font-bold text-center mb-8">Mon Profil</h1>
 
-    {% if user.teacher.profilePicFilename %}
-        <div class="mb-6 flex justify-center">
-            <img src="{{ asset('/uploads/teacher/' ~ user.teacher.profilePicFilename) }}" alt="{{ user.teacher.lastName }}" 
-            class="rounded-full max-h-[150px]">
-        </div>
-    {% endif %}
-    <p><strong>Email :</strong> {{ user.email }}</p>
-    <p><strong>Prénom :</strong> {{ user.teacher.firstName }}</p>
-    <p><strong>Nom :</strong> {{ user.teacher.lastName }}</p>
-    <p><strong>Date de naissance :</strong> {{ user.teacher.dateOfBirth|date('d/m/Y') }}</p>
-    <p><strong>Date d'obtention de Licence :</strong> {{ user.teacher.enrollmentDate|date('d/m/Y') }}</p>
-    <p><strong>Description :</strong> {{ user.teacher.description }}</p><br>
+        {% if user.teacher.profilePicFilename %}
+            <div class="flex justify-center mb-8">
+                <img src="{{ asset('/uploads/teacher/' ~ user.teacher.profilePicFilename) }}" 
+                     alt="{{ user.teacher.lastName }}" 
+                     class="rounded-full w-36 h-36 object-cover border-4 border-gray-300 shadow-lg">
+            </div>
+        {% endif %}
 
+        <div class="bg-white shadow-md rounded-lg p-6">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <p class="font-semibold text-gray-700"><strong>Email :</strong> {{ user.email }}</p>
+                    <p class="font-semibold text-gray-700"><strong>Prénom :</strong> {{ user.teacher.firstName }}</p>
+                    <p class="font-semibold text-gray-700"><strong>Nom :</strong> {{ user.teacher.lastName }}</p>
+                </div>
+                <div>
+                    <p class="font-semibold text-gray-700"><strong>Date de naissance :</strong> {{ user.teacher.dateOfBirth|date('d/m/Y') }}</p>
+                    <p class="font-semibold text-gray-700"><strong>Date d'obtention de Licence :</strong> {{ user.teacher.enrollmentDate|date('d/m/Y') }}</p>
+                    <p class="font-semibold text-gray-700"><strong>Description :</strong> {{ user.teacher.description }}</p>
+                </div>
+            </div>
 
-    <a href="{{ path('teacher_edit', {'id': user.teacher.id}) }}">Modifier mon profil</a><br>
-    <a href="{{ path('teacher_change_password') }}">Changer mon mot de passe</a><br>
-    <a href="{{ path('teacher_delete', {'id': user.teacher.id}) }}" class="text-danger">Supprimer mon compte</a>
+            <div class="mt-6 flex justify-end space-x-4">
+                <a href="{{ path('teacher_edit', {'id': user.teacher.id}) }}" 
+                   class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200">
+                    Modifier mon profil
+                </a>
+                <a href="{{ path('teacher_change_password') }}" 
+                   class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded transition duration-200">
+                    Changer mon mot de passe
+                </a>
+                <a href="{{ path('logout') }}" 
+                   class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-200">
+                    Se déconnecter
+                </a>
+            </div>
+        </div
+
+        <h2 class="text-2xl font-bold text-center mt-12 mb-6">Mes Cours</h2>
+
+        {% if lessons is empty %}
+            <p class="text-center text-gray-500">L'enseignant n'a pas encore donné de cours.</p>
+        {% else %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for lesson in lessons %}
+                    <div class="bg-white shadow-lg rounded-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                        <a href="{{ path('lesson_item', {'id': lesson.id}) }}">
+                            <div class="p-6">
+                                <video class="w-full rounded-lg shadow-md" controls>
+                                <source src="{{ asset('uploads/lesson/' ~ lesson.videoFilename) }}" type="video/mp4">
+                                Votre navigateur ne supporte pas la lecture des vidéos.
+                                </video>
+                                <h3 class="text-xl font-bold mb-2">{{ lesson.title }}</h3>
+                                <p class="text-sm text-gray-600 mb-2">
+                                    <strong>Date de création :</strong> {{ lesson.createdAt|date('d/m/Y') }}
+                                </p>
+                                <p class="text-gray-700">{{ lesson.content|slice(0, 100) }}...</p>
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
 {% endblock %}

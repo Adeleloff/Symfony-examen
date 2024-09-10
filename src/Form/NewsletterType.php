@@ -23,7 +23,7 @@ class NewsletterType extends AbstractType
             ])
             ->add('Inscription', SubmitType::class, [
                 'attr' => [
-                    'class' => 'bg-svg hover:bg-hoversvg text-white font-bold py-2 px-4 rounded',
+                    'class' => 'bg-svg hover:bg-hoversvg text-black font-bold py-2 px-4 rounded',
                 ],
             ]);
     }

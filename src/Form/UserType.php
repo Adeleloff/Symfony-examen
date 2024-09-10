@@ -26,7 +26,7 @@ class UserType extends AbstractType
                 'label' => false,
                 'required' => true,
                 'attr' => [
-                    'class' => 'border border-gray-300 p-2 rounded w-full mb-4',
+                    'class' => 'border text-black border-gray-300 p-2 rounded w-full mb-4',
                     'placeholder' => 'Entrez votre email' 
                 ],
             ]);
@@ -96,18 +96,26 @@ class UserType extends AbstractType
                 'constraints' => [
                     new Image()
                 ]
-            ])
-            ->add('Inscription', SubmitType::class, [
+                ]);
+
+        // Si ce n'est pas un formulaire d'édition, on ajoute le champ d'inscription
+        if (!$isEdit) {
+            $builder->add('Inscription', SubmitType::class, [
                 'attr' => [
                     'class' => 'bg-svg hover:bg-hoversvg text-black font-bold py-2 px-4 rounded',
                 ],
             ]);
+        }
+            
     }
 
-    public function configureOptions(OptionsResolver $resolver): void
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'data_class' => User::class,
+            'is_edit' => false,
         ]);
+
+        $resolver->setDefined(['is_edit']);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Lesson;
 use App\Entity\Teacher;
 use App\Entity\User;
 use App\Form\ChangePasswordType;
@@ -97,7 +98,7 @@ class TeacherController extends AbstractController
     }
 
     #[Route('/profile', name: 'teacher_profile')]
-    public function profile(): Response
+    public function profile(EntityManagerInterface $entityManager): Response
     {
         /**
         * @var \App\Entity\User $user 
@@ -110,8 +111,12 @@ class TeacherController extends AbstractController
             throw $this->createAccessDeniedException('Vous n\'avez pas accès à cette section.');
         }
 
+        $teacher = $user->getTeacher();
+        $lessons = $entityManager->getRepository(Lesson::class)->findBy(['teacher' => $teacher]);
+
         return $this->render('teacher/profile.html.twig', [
             'user' => $user,
+            'lessons' => $lessons,
         ]);
     }
 
@@ -174,7 +179,7 @@ class TeacherController extends AbstractController
 
             $this->addFlash('success', 'Les informations ont été mises à jour avec succès.');
 
-            return $this->redirectToRoute('teacher_index');
+            return $this->redirectToRoute('teacher_profile');
         }
 
         return $this->render('teacher/edit.html.twig', [
