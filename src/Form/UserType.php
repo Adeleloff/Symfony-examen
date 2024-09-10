@@ -18,6 +18,9 @@ class UserType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        // On récupère l'option 'is_edit' pour savoir si c'est un formulaire de modification
+        $isEdit = $options['is_edit'] ?? false;
+
         $builder
             ->add('email', TextType::class, [
                 'label' => false,
@@ -26,22 +29,28 @@ class UserType extends AbstractType
                     'class' => 'border border-gray-300 p-2 rounded w-full mb-4',
                     'placeholder' => 'Entrez votre email' 
                 ],
-            ])
-            ->add('password', PasswordType::class, [
+            ]);
+
+        // Si ce n'est pas un formulaire d'édition, on ajoute le champ de mot de passe
+        if (!$isEdit) {
+            $builder->add('password', PasswordType::class, [
                 'label' => false,
                 'required' => true,
                 'attr' => [
                     'class' => 'border border-gray-300 p-2 rounded w-full mb-4',
-                    'placeholder' => 'Entrez votre Mot de Passe' 
+                    'placeholder' => 'Entrez votre mot de passe'
                 ],
-            ])
+            ]);
+        }
+
+        $builder
             ->add('lastName', TextType::class, [
                 'label' => false,
                 'mapped' => false,
                 'required' => true,
                 'attr' => [
                     'class' => 'border border-gray-300 p-2 rounded w-full mb-4',
-                    'placeholder' => 'Nom' 
+                    'placeholder' => 'Nom'
                 ],
             ])
             ->add('firstName', TextType::class, [
@@ -50,7 +59,7 @@ class UserType extends AbstractType
                 'required' => true,
                 'attr' => [
                     'class' => 'border border-gray-300 p-2 rounded w-full mb-4',
-                    'placeholder' => 'Prénom' 
+                    'placeholder' => 'Prénom'
                 ],
             ])
             ->add('dateOfBirth', DateType::class, [
@@ -63,7 +72,7 @@ class UserType extends AbstractType
                 ],
             ])
             ->add('enrollmentDate', DateType::class, [
-                'label' => 'Date d\'optention de Licence',
+                'label' => 'Date d\'obtention de Licence',
                 'widget' => 'single_text',
                 'mapped' => false,
                 'required' => true,
@@ -81,16 +90,16 @@ class UserType extends AbstractType
                 ],
             ])
             ->add('profilePic', FileType::class, [
-                'label' => 'Photo de profile',
+                'label' => 'Photo de profil',
                 'mapped' => false,
                 'required' => false,
                 'constraints' => [
                     new Image()
                 ]
-        ])
+            ])
             ->add('Inscription', SubmitType::class, [
                 'attr' => [
-                    'class' => 'bg-svg hover:bg-hoversvg text-white font-bold py-2 px-4 rounded',
+                    'class' => 'bg-svg hover:bg-hoversvg text-black font-bold py-2 px-4 rounded',
                 ],
             ]);
     }

@@ -1,13 +1,27 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Modifier un Enseignant{% endblock %}
+{% block title %}Modifier mon profil{% endblock %}
 
 {% block body %}
-    <h1>Modifier un Enseignant</h1>
+    <h1>Modifier mon profil</h1>
 
-    {{ include('teacher/_form.html.twig', {'button_label': 'Modifier'}) }}
+    {{ form_start(form) }}
+        {{ form_row(form.email, { 'label': 'Email' }) }}
+        
+        {# Le champ du mot de passe n'est pas affiché pour l'édition du profil #}
 
-    <a href="{{ path('teacher_index') }}">Retourner à la liste des Enseignants</a>
+        {{ form_row(form.firstName, { 'label': 'Prénom' }) }}
+        {{ form_row(form.lastName, { 'label': 'Nom' }) }}
+        {{ form_row(form.dateOfBirth, { 'label': 'Date de naissance' }) }}
+        {{ form_row(form.enrollmentDate, { 'label': 'Date d\'obtention de Licence' }) }}
+        {{ form_row(form.description, { 'label': 'Description' }) }}
+        {{ form_row(form.profilePic, { 'label': 'Photo de profil' }) }}
+        
+        <button class="btn btn-primary">Sauvegarder les modifications</button>
+    {{ form_end(form) }}
+
+    {# Redirige l'utilisateur vers son profil après l'édition #}
+    <a href="{{ path('teacher_profile') }}">Retourner à mon profil</a>
 
     {{ include('teacher/_delete_form.html.twig') }}
 {% endblock %}

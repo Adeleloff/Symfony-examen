@@ -24,6 +24,9 @@ class CategoryController extends AbstractController
         ]);
     }
 
+    /**
+     * @IsGranted("ROLE_ADMIN")
+     */
     #[Route('/new', name: 'category_new', methods: ['GET', 'POST'])]
     public function new(
         Request $request, 
@@ -47,7 +50,10 @@ class CategoryController extends AbstractController
         ]);
     }
 
-    #[Route('/edit/{id}', name: 'category_edit', methods: ['GET', 'POST'])]
+    /**
+     * @IsGranted("ROLE_ADMIN")
+     */
+    #[Route('/{id}/edit', name: 'category_edit', methods: ['GET', 'POST'])]
     public function edit(
         Request $request, 
         Category $category, 
@@ -69,6 +75,9 @@ class CategoryController extends AbstractController
         ]);
     }
 
+    /**
+     * @IsGranted("ROLE_ADMIN")
+     */
     #[Route('/{id}', name: 'category_delete', methods: ['POST'])]
     public function delete(Request $request, Category $category, EntityManagerInterface $entityManager): Response
     {

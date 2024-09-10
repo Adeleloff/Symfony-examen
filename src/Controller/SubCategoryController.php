@@ -13,6 +13,9 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/subcategory')]
 class SubCategoryController extends AbstractController
 {
+    /**
+     * @IsGranted({"ROLE_ADMIN", "ROLE_TEACHER"})
+     */
     #[Route('/new', name: 'subcategory_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -34,7 +37,10 @@ class SubCategoryController extends AbstractController
     }
 
 
-    #[Route('/edit/{id}', name: 'subcategory_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}/edit', name: 'subcategory_edit', methods: ['GET', 'POST'])]
+    /**
+     * @IsGranted({"ROLE_ADMIN", "ROLE_TEACHER"})
+     */
     public function edit(Request $request, SubCategory $subCategory, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(SubCategoryType::class, $subCategory);
@@ -60,6 +66,9 @@ class SubCategoryController extends AbstractController
         ]);
     }
 
+    /**
+     * @IsGranted("ROLE_ADMIN")
+     */
     #[Route('/{id}', name: 'subcategory_delete', methods: ['POST'])]
     public function delete(Request $request, SubCategory $subCategory, EntityManagerInterface $entityManager): Response
     {

@@ -29,6 +29,9 @@ class LessonController extends AbstractController
         ]);
     }
 
+    /**
+     * @IsGranted({"ROLE_ADMIN", "ROLE_TEACHER"})
+     */
     #[Route('/new', name: 'lesson_new', methods: ['GET', 'POST'])]
     public function newLesson(
         Request $request,
@@ -81,9 +84,17 @@ class LessonController extends AbstractController
         ]);
     }
 
-    #[Route('/edit/{id}', name: 'lesson_edit', methods: ['GET', 'POST'])]
+    /**
+     * @IsGranted({"ROLE_ADMIN", "ROLE_TEACHER"})
+     */
+    #[Route('/{id}/edit', name: 'lesson_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Lesson $lesson, EntityManagerInterface $entityManager): Response
     {
+        // Vérifie si le User connecté est bien l'auteur de la leçon
+        if ($lesson->getTeacher()->getUser() !== $this->getUser()) {
+            throw $this->createAccessDeniedException('Vous ne pouvez pas modifier cette leçon.');
+        }
+
         $form = $this->createForm(LessonType::class, $lesson);
         $form->handleRequest($request);
 
@@ -99,9 +110,17 @@ class LessonController extends AbstractController
         ]);
     }
 
+    /**
+     * @IsGranted({"ROLE_ADMIN", "ROLE_TEACHER"})
+     */
     #[Route('/{id}', name: 'lesson_delete', methods: ['POST'])]
     public function delete(Request $request, Lesson $lesson, EntityManagerInterface $entityManager): Response
     {
+        // Vérifie si le User connecté est bien l'auteur de la leçon
+        if ($lesson->getTeacher()->getUser() !== $this->getUser()) {
+            throw $this->createAccessDeniedException('Vous ne pouvez pas modifier cette leçon.');
+        }
+        
         if ($this->isCsrfTokenValid('delete'.$lesson->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($lesson);
             $entityManager->flush();
@@ -117,18 +136,4 @@ class LessonController extends AbstractController
             'lesson' => $lesson,
         ]);
     }
-
-
-    // Exemple: d'accés personnalisé pour certains contexts (affiche juste une page avec écrit statistiques)
-    /*
-    #[Route('/stats', name:"lesson_stats")]
-    public function lessonsStats(): Response
-    {
-        if ($this->isGranted("ROLE_USER")){
-            //Si utilisateur alors afficher autre chose que la page de login
-        }
-        $this->denyAccessUnlessGranted("ROLE_ADMIN");
-        return new Response('statistiques'); // Si pas admin alors redirige sur pas de login
-    }
-    */
 }

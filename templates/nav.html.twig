@@ -16,25 +16,48 @@
     </button>
     <div class="hidden w-full md:block md:w-auto" id="navbar-default">
       <ul class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-beige">
-  <li>
-    <a href="{{ path('home_page') }}" class="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-gray-500 md:p-0" aria-current="page">Accueil</a>
-  </li>
-  <li>
-    <a href="{{ path('category_list') }}" class="block py-2 px-3 text-black rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-gray-500 md:p-0">Cours</a>
-  </li>
-  <li>
-    <a href="{{ path('teacher_index') }}" class="block py-2 px-3 text-black rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-gray-500 md:p-0">Nos Enseignants</a>
-  </li>
-  <li>
-    <a href="{{ path('newsletter_subscribe') }}" class="block py-2 px-3 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Newsletter</a>
-  </li>
-  <li>
-    <a href="{{ path('about_page') }}" class="block py-2 px-3 text-black rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-gray-500 md:p-0">À propos</a>
-  </li>
-</ul>
-
-
-
+        <li>
+          <a href="{{ path('home_page') }}" class="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-gray-500 md:p-0" aria-current="page">Accueil</a>
+        </li>
+        <li>
+          <a href="{{ path('category_list') }}" class="block py-2 px-3 text-black rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-gray-500 md:p-0">Cours</a>
+        </li>
+        <li>
+          <a href="{{ path('teacher_index') }}" class="block py-2 px-3 text-black rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-gray-500 md:p-0">Nos Enseignants</a>
+        </li>
+        <li>
+          <a href="{{ path('newsletter_subscribe') }}" class="block py-2 px-3 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Newsletter</a>
+        </li>
+        <li>
+          <a href="{{ path('about_page') }}" class="block py-2 px-3 text-black rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-gray-500 md:p-0">À propos</a>
+        </li>
+        <li>
+          {% if app.user %}
+            {% if is_granted('ROLE_ADMIN') %}
+              <a href="{{ path('admin_dashboard') }}" class="flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12h4m0 0h-4m0 0v-4m0 4v4M6 6v12m6-12v12" />
+                </svg>
+                <span>Dashboard</span>
+              </a>
+            {% elseif is_granted('ROLE_TEACHER') %}
+              <a href="{{ path('teacher_profile') }}" class="flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A9.997 9.997 0 0112 2a9.997 9.997 0 016.879 15.804M12 22v-2" />
+                </svg>
+                <span>Mon Profil</span>
+              </a>
+            {% endif %}
+          {% else %}
+            <a href="{{ path('login') }}" class="flex items-center space-x-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12h4m0 0h-4m0 0v-4m0 4v4M5 12h10m-7-4h.01M12 12h.01M12 16h.01" />
+              </svg>
+              <span>Se connecter</span>
+            </a>
+          {% endif %}
+        </li>
+      </ul>
     </div>
   </div>
 </nav>

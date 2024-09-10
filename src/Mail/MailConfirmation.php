@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Newsletter;
+namespace App\Mail;
 
 use App\Entity\NewsletterEmail;
-use App\Entity\Teacher;
 use App\Entity\User;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
@@ -28,7 +27,7 @@ class MailConfirmation
         $this->mailer->send($email);
     }
 
-    public function sendTeacher(User $teacher)
+    public function sendNewsTeacher(User $teacher)
     {
         $email = (new Email())
             ->from($this->adminEmail)
@@ -39,6 +38,33 @@ class MailConfirmation
 
         $this->mailer->send($email);
 
+    }
+
+    public function sendPasswordReset(User $user, string $resetToken)
+    {
+        $email = (new Email())
+            ->from($this->adminEmail)
+            ->to($user->getEmail())
+            ->subject('KoreanIsta - Réinitialisation de mot de passe')
+            ->html(sprintf(
+                '<p>Bonjour,</p><p>Pour réinitialiser votre mot de passe, veuillez cliquer sur le lien suivant : 
+                <a href="%s/reset-password/%s">Réinitialiser mon mot de passe</a></p>',
+                $_SERVER['APP_URL'],
+                $resetToken
+            ));
+
+        $this->mailer->send($email);
+    }
+
+    public function sendPasswordChanged(User $user)
+    {
+        $email = (new Email())
+            ->from($this->adminEmail)
+            ->to($user->getEmail())
+            ->subject('KoreanIsta - Confirmation de changement de mot de passe')
+            ->html('<p>Votre mot de passe a bien été modifié. Si ce changement n\'a pas été initié par vous, veuillez nous contacter immédiatement.</p>');
+
+        $this->mailer->send($email);
     }
 }
 
