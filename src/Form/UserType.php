@@ -20,17 +20,18 @@ class UserType extends AbstractType
     {
         // On récupère l'option 'is_edit' pour savoir si c'est un formulaire de modification
         $isEdit = $options['is_edit'] ?? false;
+        // On récupère l'option 'is_user' pour savoir si c'est un formulaire est pour un utilisateur
+        $isUser = $options['is_user'] ?? false;
 
-        $builder
-            ->add('email', TextType::class, [
-                'label' => false,
-                'required' => true,
-                'attr' => [
-                    'class' => 'border text-black border-gray-300 p-2 rounded w-full mb-4',
-                    'placeholder' => 'Entrez votre email' 
-                ],
-            ]);
-
+        $builder->add('email', TextType::class, [
+                    'label' => false,
+                    'required' => true,
+                    'attr' => [
+                        'class' => 'border text-black border-gray-300 p-2 rounded w-full mb-4',
+                        'placeholder' => 'Entrez votre email' 
+                    ],
+                ]);
+    
         // Si ce n'est pas un formulaire d'édition, on ajoute le champ de mot de passe
         if (!$isEdit) {
             $builder->add('password', PasswordType::class, [
@@ -43,69 +44,85 @@ class UserType extends AbstractType
             ]);
         }
 
-        $builder
-            ->add('lastName', TextType::class, [
-                'label' => false,
-                'mapped' => false,
-                'required' => true,
-                'attr' => [
-                    'class' => 'border border-gray-300 p-2 rounded w-full mb-4',
-                    'placeholder' => 'Nom'
-                ],
-            ])
-            ->add('firstName', TextType::class, [
-                'label' => false,
-                'mapped' => false,
-                'required' => true,
-                'attr' => [
-                    'class' => 'border border-gray-300 p-2 rounded w-full mb-4',
-                    'placeholder' => 'Prénom'
-                ],
-            ])
-            ->add('dateOfBirth', DateType::class, [
-                'label' => 'Date de Naissance',
-                'widget' => 'single_text',
-                'mapped' => false,
-                'required' => true,
-                'attr' => [
-                    'class' => 'border border-gray-300 p-2 rounded w-full mb-4'
-                ],
-            ])
-            ->add('enrollmentDate', DateType::class, [
-                'label' => 'Date d\'obtention de Licence',
-                'widget' => 'single_text',
-                'mapped' => false,
-                'required' => true,
-                'attr' => [
-                    'class' => 'border border-gray-300 p-2 rounded w-full mb-4'
-                ],
-            ])
-            ->add('description', TextareaType::class, [
-                'label' => false,
-                'mapped' => false,
-                'required' => true,
-                'attr' => [
-                    'class' => 'border border-gray-300 p-2 rounded w-full mb-4',
-                    'placeholder' => 'Entrez votre description'
-                ],
-            ])
-            ->add('profilePic', FileType::class, [
-                'label' => 'Photo de profil',
-                'mapped' => false,
-                'required' => false,
-                'constraints' => [
-                    new Image()
-                ]
-                ]);
-
-        // Si ce n'est pas un formulaire d'édition, on ajoute le champ d'inscription
-        if (!$isEdit) {
-            $builder->add('Inscription', SubmitType::class, [
+        //seulement si c'est un User qu'on veut créer
+        if ($isUser) {
+            $builder->add('creation', SubmitType::class, [
+                'label' => 'Création', 
                 'attr' => [
                     'class' => 'bg-svg hover:bg-hoversvg text-black font-bold py-2 px-4 rounded',
                 ],
             ]);
         }
+        
+
+        //Si ce n'est pas un user
+        if (!$isUser) {
+            
+            $builder
+                ->add('lastName', TextType::class, [
+                    'label' => false,
+                    'mapped' => false,
+                    'required' => true,
+                    'attr' => [
+                        'class' => 'border border-gray-300 p-2 rounded w-full mb-4',
+                        'placeholder' => 'Nom'
+                    ],
+                ])
+                ->add('firstName', TextType::class, [
+                    'label' => false,
+                    'mapped' => false,
+                    'required' => true,
+                    'attr' => [
+                        'class' => 'border border-gray-300 p-2 rounded w-full mb-4',
+                        'placeholder' => 'Prénom'
+                    ],
+                ])
+                ->add('dateOfBirth', DateType::class, [
+                    'label' => 'Date de Naissance',
+                    'widget' => 'single_text',
+                    'mapped' => false,
+                    'required' => true,
+                    'attr' => [
+                        'class' => 'border border-gray-300 p-2 rounded w-full mb-4'
+                    ],
+                ])
+                ->add('enrollmentDate', DateType::class, [
+                    'label' => 'Date d\'obtention de Licence',
+                    'widget' => 'single_text',
+                    'mapped' => false,
+                    'required' => true,
+                    'attr' => [
+                        'class' => 'border border-gray-300 p-2 rounded w-full mb-4'
+                    ],
+                ])
+                ->add('description', TextareaType::class, [
+                    'label' => false,
+                    'mapped' => false,
+                    'required' => true,
+                    'attr' => [
+                        'class' => 'border border-gray-300 p-2 rounded w-full mb-4',
+                        'placeholder' => 'Entrez votre description'
+                    ],
+                ])
+                ->add('profilePic', FileType::class, [
+                    'label' => 'Photo de profil',
+                    'mapped' => false,
+                    'required' => false,
+                    'constraints' => [
+                        new Image()
+                    ]
+                    ]);
+    
+            // Si ce n'est pas un formulaire d'édition, on ajoute le champ d'inscription
+            if (!$isEdit) {
+                $builder->add('Inscription', SubmitType::class, [
+                    'attr' => [
+                        'class' => 'bg-svg hover:bg-hoversvg text-black font-bold py-2 px-4 rounded',
+                    ],
+                ]);
+            }
+        }
+        
             
     }
 
@@ -114,8 +131,10 @@ class UserType extends AbstractType
         $resolver->setDefaults([
             'data_class' => User::class,
             'is_edit' => false,
+            'is_user' => false,
         ]);
 
         $resolver->setDefined(['is_edit']);
+        $resolver->setDefined(['is_user']);
     }
 }

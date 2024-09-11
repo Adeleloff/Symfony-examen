@@ -91,7 +91,7 @@ class LessonController extends AbstractController
     public function edit(Request $request, Lesson $lesson, EntityManagerInterface $entityManager): Response
     {
         // Vérifie si le User connecté est bien l'auteur de la leçon
-        if ($lesson->getTeacher()->getUser() !== $this->getUser()) {
+        if ($lesson->getTeacher()->getUser() !== $this->getUser() && !$this->isGranted('ROLE_ADMIN')) {
             throw $this->createAccessDeniedException('Vous ne pouvez pas modifier cette leçon.');
         }
 

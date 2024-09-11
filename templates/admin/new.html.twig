@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+  <h1 class="text-4xl font-bold text-center mb-4">Ajout d'un Administrateur</h1>
+  
+  <div class="mx-auto max-w-lg">
+    {{ form(form) }}
+  </div>
+
+  <div class="mt-6 text-center">
+    <a href="{{ path('admin_dashboard') }}" 
+       class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+      Retour au Dashboard
+    </a>
+  </div>
+{% endblock %}

@@ -3,14 +3,125 @@
 {% block title %}Dashboard Admin{% endblock %}
 
 {% block body %}
-    <h1>Dashboard Administrateur</h1>
+    <div class="max-w-7xl mx-auto py-8">
+        <h1 class="text-3xl font-bold text-center mb-8">Dashboard Administrateur</h1>
 
-    <h2>Gestion des entités</h2>
-    <ul>
-        <li><a href="#">Gérer les catégories</a></li>
-        <li><a href="#">Gérer les leçons</a></li>
-        <li><a href="#">Gérer les sous-catégories</a></li>
-        <li><a href="#">Gérer les enseignants</a></li>
-        <li><a href="#">Gérer les utilisateurs</a></li>
-    </ul>
+        {# Gestion des sous-catégories pour toutes les catégories #}
+        <h2 class="text-2xl font-bold mb-6">Gestion des sous-catégories</h2>
+        <div class="flex justify-end mb-6">
+            <a href="{{ path('subcategory_new') }}" 
+               class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                Ajouter une sous-catégorie
+            </a>
+        </div>
+
+        <div<div class="grid grid-cols-2 gap-6 mb-12">
+            {% for category in categories %}
+                <div class="bg-white shadow-lg rounded-lg p-4 hover:shadow-xl transition-shadow duration-300">
+                    <h3 class="text-xl font-bold mb-2">{{ category.name }}</h3>
+                    <ul>
+                        {% set hasSubcategories = false %}
+                        {% for subcategory in subcategories %}
+                            {% if subcategory.category.id == category.id %}
+                                {% set hasSubcategories = true %}
+                                <li class="flex justify-between items-center mb-2">
+                                    <span>{{ subcategory.name }}</span>
+                                    <div>
+                                        <a href="{{ path('subcategory_edit', {'id': subcategory.id}) }}" 
+                                        class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-3 rounded">
+                                            Modifier
+                                        </a>
+                                        <form method="post" action="{{ path('subcategory_delete', {'id': subcategory.id}) }}" 
+                                            class="inline-block" 
+                                            onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette sous-catégorie ?');">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ subcategory.id) }}">
+                                            <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded">
+                                                Supprimer
+                                            </button>
+                                        </form>
+                                    </div>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if not hasSubcategories %}
+                            <li>Aucune sous-catégorie pour cette catégorie</li>
+                        {% endif %}
+                    </ul>
+                </div>
+            {% endfor %}
+        </div>
+
+        {# Gestion des catégories#}
+        <h2 class="text-2xl font-bold mb-6">Gestion des catégories</h2>
+        <div class="flex justify-end mb-6">
+            <a href="{{ path('category_new') }}" 
+               class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                Créer une nouvelle catégorie
+            </a>
+        </div>
+
+        <div class="grid grid-cols-2 gap-6">
+            {% for category in categories %}
+                <div class="bg-white shadow-lg rounded-lg p-4 hover:shadow-xl transition-shadow duration-300">
+                    <h3 class="text-xl font-bold mb-2">{{ category.name }}</h3>
+
+                    <div class="flex justify-between">
+                        <a href="{{ path('category_edit', {'id': category.id}) }}" 
+                           class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-3 rounded">
+                            Modifier
+                        </a>
+                        <form method="post" action="{{ path('category_delete', {'id': category.id}) }}" 
+                              onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette catégorie ?');">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ category.id) }}">
+                            <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-3 rounded">
+                                Supprimer
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        {# Gestion des enseignants #}
+        <h2 class="text-2xl font-bold mt-12 mb-6">Gestion des enseignants</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for teacher in teachers %}
+                <div class="bg-white shadow-lg rounded-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 p-4">
+                    {% if teacher.profilePicFilename %}
+                        <div class="flex justify-center mb-4">
+                            <img src="{{ asset('uploads/teacher/' ~ teacher.profilePicFilename) }}" 
+                                 alt="{{ teacher.lastName }}" class="rounded-full w-36 h-36 object-cover">
+                        </div>
+                    {% endif %}
+                    <h3 class="text-xl font-bold text-center mb-2">{{ teacher.firstName }} {{ teacher.lastName }}</h3>
+
+                    <form method="post" action="{{ path('teacher_delete', {'id': teacher.id}) }}" 
+                          onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet enseignant ?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ teacher.id) }}">
+                        <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded w-full">
+                            Supprimer
+                        </button>
+                    </form>
+                </div>
+            {% endfor %}
+        </div>
+
+        {# Lien pour accéder au formulaire de création d'utilisateur #}
+        <div class="mt-12 text-center">
+            <a href="{{ path('user_new') }}" 
+            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                Créer un utilisateur
+            </a>
+        </div>
+
+        {# Lien de déconnexion #}
+        <div class="mt-4 text-center">
+            <a href="{{ path('logout') }}" 
+            class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                Se déconnecter
+            </a>
+        </div>
+    </div>
 {% endblock %}
