@@ -10,19 +10,22 @@
 ## Fonctionnalités principales
 
 ### 1. Gestion des utilisateurs et des rôles
-  - 1. **Contexte** : J'ai implémenté un système de gestion des utilisateurs avec différents rôles (administrateur, enseignant, visiteur (ceux non définit par un rôle)) pour contrôler l'accès aux différentes parties du site.
-  - 2. **Explication** : J'ai utilisé le composant **Security** de Symfony pour gérer l'authentification et les rôles. Les utilisateurs peuvent s'inscrire, se connecter et voir leurs pages respectivement accessibles. Les contrôles d'accès sont définis dans les contrôleurs. J'ai décidé d'utiliser des rôles ne pas permettre à tout le monde de créer, modifier ou supprimer tout ce qu'il veut. 
+
+  - **Contexte** : J'ai implémenté un système de gestion des utilisateurs avec différents rôles (administrateur, enseignant, visiteur (ceux non définit par un rôle)) pour contrôler l'accès aux différentes parties du site.
+  - **Explication** : J'ai utilisé le composant **Security** de Symfony pour gérer l'authentification et les rôles. Les utilisateurs peuvent s'inscrire, se connecter et voir leurs pages respectivement accessibles. Les contrôles d'accès sont définis dans les contrôleurs. J'ai décidé d'utiliser des rôles ne pas permettre à tout le monde de créer, modifier ou supprimer tout ce qu'il veut. 
   Voici comment sont répartis les autorisations, elles sont directement mises dans les contrôleurs:
 
   ```php
-
+    /**
+    * @IsGranted({"ROLE_ADMIN"}) 
+    */
   ```
 
-    **Administrateur** : un admin peut tout faire sur le site, il a, cependant, des autorisations exclusives tel que : Création/modification/suppression d'une catégorie, suppression d'une sous-catégorie, Création/modification/suppression d'un admin, il peut aussi supprimer n'importe quel leçon (quelque soit l'enseignant) et n'importe quel enseignant (son user lié aussi). Il a aussi accés à une dashboard dédié.
+**Administrateur** : un admin peut tout faire sur le site, il a, cependant, des autorisations exclusives tel que : Création/modification/suppression d'une catégorie, suppression d'une sous-catégorie, Création/modification/suppression d'un admin, il peut aussi supprimer n'importe quel leçon (quelque soit l'enseignant) et n'importe quel enseignant (son user lié aussi). Il a aussi accés à une dashboard dédié.
 
-    **Enseignant** : Un enseignant a des autorisations principalement centrée sur lui : il peut faire une création/modification/suppression d'une leçon qu'il a écrit seulement, une création/modification d'une sous-catégorie, il peut aussi modifier/supprimer son profil. Il a aussi accés à une page profil.
+**Enseignant** : Un enseignant a des autorisations principalement centrée sur lui : il peut faire une création/modification/suppression d'une leçon qu'il a écrit seulement, une création/modification d'une sous-catégorie, il peut aussi modifier/supprimer son profil. Il a aussi accés à une page profil.
 
-    **Visiteur** : Un visiteur qui n'a pas de compte sur le site peut voir les catégories, sous-catégories, les leçons, le profile des enseignants et il a accés à une page de connection.
+**Visiteur** : Un visiteur qui n'a pas de compte sur le site peut voir les catégories, sous-catégories, les leçons, le profile des enseignants et il a accés à une page de connection.
 
 ### 2. Système de formulaires et validation
   - **Contexte** : Les utilisateurs interagissent avec le site via des formulaires, que ce soit pour l'inscription, l'ajout de contenu, la réinitialisation du mot de passe, le mot de passe oublié, etc.
@@ -51,17 +54,15 @@ $email = (new Email())
 ```
 ### 4. Autres fonctionnalités
 
-  - 1. **EventSubscriber** : J'ai fait un eventSubscriber pour hasher le mot de passer juste avant de l'enregistrer dans la bdd, lors de la modification ou de la création (grâce au prePersist et preUpdate).
-  - 2. **Messages flash** : J'ai aussi décidé d'utiliser des messages flash plutôt que des vue de confirmation.
+  - **EventSubscriber** : J'ai fait un eventSubscriber pour hasher le mot de passer juste avant de l'enregistrer dans la bdd, lors de la modification ou de la création (grâce au prePersist et preUpdate).
+  - **Messages flash** : J'ai aussi décidé d'utiliser des messages flash plutôt que des vue de confirmation.
 
 ## Attention
 
-  - 1. **Taille Vidéos/Images** : Attention, si sur le formulaire vous avez l'erreur "The uploaded file was too large. Please try to upload a smaller file." ça veut dire qu'il faut modifier le fichier php.ini pour augmenter la capacité d'upload. La commande "php --ini", vous permez de trouver l'emplacement du fichier. Cliquez sur le lien qui apparait dans le terminal et modifiez les valeurs suivantes : upload_max_filesize et post_max_size. En maximum dans lessonsType.php, j'ai mis "'maxSize' => '5120M'" (->5 Go), pour être sur.
-  - 2. **Mailer** : Un mailer est utilisé la variable d'environnement **MAILER_DSN** est donc nécessaire dans le .env.local.
-  - 3. **Les médias** : J'ai mis une vidéo dans `assets/video/` pour faire les tests. C'est pas une de mes vidéos personnel, c'est une vidéo prise de youtube dont j'ai pas les droits. J'ai mis deux images dans `assets/images/`.
+  - **Taille Vidéos/Images** : Attention, si sur le formulaire vous avez l'erreur "The uploaded file was too large. Please try to upload a smaller file." ça veut dire qu'il faut modifier le fichier php.ini pour augmenter la capacité d'upload. La commande "php --ini", vous permez de trouver l'emplacement du fichier. Cliquez sur le lien qui apparait dans le terminal et modifiez les valeurs suivantes : upload_max_filesize et post_max_size. En maximum dans lessonsType.php, j'ai mis "'maxSize' => '5120M'" (->5 Go), pour être sur.
+  - **Mailer** : Un mailer est utilisé la variable d'environnement **MAILER_DSN** est donc nécessaire dans le .env.local.
+  - **Les médias** : J'ai mis une vidéo dans `assets/video/` pour faire les tests. C'est pas une de mes vidéos personnel, c'est une vidéo prise de youtube dont j'ai pas les droits. J'ai mis deux images dans `assets/images/`.
 
 ## Point d'amélioration
 
 J'aurais aimé aller plus encore loin dans le projet. J'ai aussi délaissé toute la partie front que j'ai fait faire par chatgpt. J'aurais aimé pouvoir mettre en place plus de sécurity, quand à la création (inscription) et la gestion des enseignants, avec une mise en attente de la demande et une vérification par un admin du formulaire d'inscription.
-
-
