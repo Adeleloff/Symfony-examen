@@ -23,10 +23,8 @@ class SecurityController extends AbstractController
     #[Route(path: '/login', name: 'login')]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
-        // get the login error if there is one
         $error = $authenticationUtils->getLastAuthenticationError();
 
-        // last username entered by the user
         $lastUsername = $authenticationUtils->getLastUsername();
 
         return $this->render('security/login.html.twig', [
@@ -56,7 +54,6 @@ class SecurityController extends AbstractController
             $user = $userRepository->findOneByEmail($form->get('email')->getData());
 
             if ($user) {
-                // Générer un token
                 $token = $tokenGenerator->generateToken();
                 
                 // Créer une nouvelle demande de réinitialisation
@@ -65,11 +62,9 @@ class SecurityController extends AbstractController
                 $passwordResetRequest->setToken($token);
                 $passwordResetRequest->setExpiresAt(new \DateTime('+1 hour'));
 
-                // Sauvegarder dans la base de données
                 $entityManager->persist($passwordResetRequest);
                 $entityManager->flush();
 
-                // Envoyer un email avec le lien de réinitialisation
                 $mailerService->sendPasswordReset($user, $token);
 
                 return $this->render('security/forgot_password_confirmation.html.twig');
@@ -103,28 +98,32 @@ class SecurityController extends AbstractController
             return $this->render('security/invalid_token.html.twig');
         }
 
-        // Récupérer l'utilisateur associé
         $user = $passwordResetRequest->getUser();
 
         $form = $this->createForm(ResetPasswordType::class);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Récupérer le nouveau mot de passe en clair
+
             $newPassword = $form->get('newPassword')->getData();
+            $confirmPassword = $form->get('confirmPassword')->getData();
 
+            if ($newPassword !== $confirmPassword) {
+                $form->get('confirmPassword')->addError(new FormError('Les deux mots de passe ne correspondent pas.'));
+            } else {
             
-            $user->setPassword($newPassword);
-            $entityManager->persist($user);
+                $user->setPassword($newPassword);
+                $entityManager->persist($user);
 
-            // Supprimer le token de réinitialisation
-            $entityManager->remove($passwordResetRequest);
-            $entityManager->flush();
+                $entityManager->remove($passwordResetRequest);
+                $entityManager->flush();
 
-            $mailerService->sendPasswordChanged($user);
+                $mailerService->sendPasswordChanged($user);
 
-            $this->addFlash('success', 'Votre mot de passe a bien été réinitialisé.');
-            return $this->redirectToRoute('login');
+                $this->addFlash('success', 'Votre mot de passe a bien été réinitialisé.');
+                return $this->redirectToRoute('login');
+
+            }
         }
 
         return $this->render('security/reset_password.html.twig', [

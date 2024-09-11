@@ -47,7 +47,6 @@ class MailConfirmation
         // Générer l'URL complète pour la réinitialisation du mot de passe
         $resetUrl = $this->urlGenerator->generate('reset_password', ['token' => $resetToken], UrlGeneratorInterface::ABSOLUTE_URL);
 
-        // Créer et envoyer l'e-mail
         $email = (new Email())
             ->from($this->adminEmail)
             ->to($user->getEmail())

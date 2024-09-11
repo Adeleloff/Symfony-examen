@@ -88,7 +88,6 @@ class SubCategory
     public function removeLesson(Lesson $lesson): static
     {
         if ($this->lessons->removeElement($lesson)) {
-            // set the owning side to null (unless already changed)
             if ($lesson->getSubCategory() === $this) {
                 $lesson->setSubCategory(null);
             }

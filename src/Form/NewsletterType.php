@@ -15,10 +15,10 @@ class NewsletterType extends AbstractType
     {
         $builder
             ->add('email', EmailType::class, [
-                'label' => false, // Masque le label
+                'label' => false,
                 'attr' => [
                     'class' => 'border border-gray-300 p-2 rounded w-full mb-4',
-                    'placeholder' => 'Entrez votre email' // Ajoute un placeholder
+                    'placeholder' => 'Entrez votre email'
                 ],
             ])
             ->add('Inscription', SubmitType::class, [

@@ -16,13 +16,11 @@ class SearchController extends AbstractController
         $query = $request->query->get('q');
 
         if (!$query) {
-            return $this->redirectToRoute('homepage'); // Rediriger vers la page d'accueil si aucune recherche
+            return $this->redirectToRoute('home_page');
         }
 
-        // Rechercher dans la table lesson
         $lessons = $lessonRepository->findBySearchQuery($query);
 
-        // Renvoyer les résultats à un template
         return $this->render('search/results.html.twig', [
             'lessons' => $lessons,
             'query' => $query,

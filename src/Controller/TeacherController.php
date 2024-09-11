@@ -2,7 +2,9 @@
 
 namespace App\Controller;
 
+use App\Entity\Category;
 use App\Entity\Lesson;
+use App\Entity\SubCategory;
 use App\Entity\Teacher;
 use App\Entity\User;
 use App\Form\ChangePasswordType;
@@ -26,6 +28,7 @@ class TeacherController extends AbstractController
     public function list(TeacherRepository $teacherRepository): Response
     {
         $teachers = $teacherRepository->findAll();
+        
         return $this->render('teacher/list.html.twig', [
             'teachers' => $teachers,
         ]);
@@ -46,50 +49,56 @@ class TeacherController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            // ajoute le ROLE_TEACHER à l'utilisateur
-            $user->setRoles(['ROLE_TEACHER']);
+            $password = $form->get('password')->getData();
+            $confirmPassword = $form->get('confirmPassword')->getData();
 
-            // Création de l'entité Teacher associée à l'utilisateur
-            $teacher = new Teacher();
-            $teacher->setUser($user);
-            $teacher->setLastName($form->get('lastName')->getData());
-            $teacher->setFirstName($form->get('firstName')->getData());
-            $teacher->setDateOfBirth($form->get('dateOfBirth')->getData());
-            $teacher->setEnrollmentDate($form->get('enrollmentDate')->getData());
-            $teacher->setDescription($form->get('description')->getData());
+            if ($password !== $confirmPassword) {
+                $form->get('confirmPassword')->addError(new FormError('Les deux mots de passe ne correspondent pas.'));
+            } else {
 
-            /** @var \Symfony\Component\HttpFoundation\File\UploadedFile $profilePic */
-            $profilePic = $form->get('profilePic')->getData();
+                // ajoute le ROLE_TEACHER à l'utilisateur
+                $user->setRoles(['ROLE_TEACHER']);
 
-            if ($profilePic){
-                // si il y a une photo alors on déclenche l'upload
-                $originalFilename = pathinfo($profilePic->getClientOriginalName(), PATHINFO_FILENAME);
-                $safeFilename = $slugger->slug($originalFilename);
-                $filename = $safeFilename . '-' . uniqid() . '.' . $profilePic->guessExtension();
+                $teacher = new Teacher();
+                $teacher->setUser($user);
+                $teacher->setLastName($form->get('lastName')->getData());
+                $teacher->setFirstName($form->get('firstName')->getData());
+                $teacher->setDateOfBirth($form->get('dateOfBirth')->getData());
+                $teacher->setEnrollmentDate($form->get('enrollmentDate')->getData());
+                $teacher->setDescription($form->get('description')->getData());
 
-                try {
-                    $profilePic->move(
-                        'uploads/teacher/',
-                        $filename
-                    );
-                    // Ici, nettoyage si il y a déjà une photo
-                    if ($teacher->getProfilePicFilename() !== null) {
-                        unlink(__DIR__ . "/../../public/uploads/teacher/" . $teacher->getProfilePicFilename());
+                /** @var \Symfony\Component\HttpFoundation\File\UploadedFile $profilePic */
+                $profilePic = $form->get('profilePic')->getData();
+
+                if ($profilePic){
+                    // si il y a une photo alors on déclenche l'upload
+                    $originalFilename = pathinfo($profilePic->getClientOriginalName(), PATHINFO_FILENAME);
+                    $safeFilename = $slugger->slug($originalFilename);
+                    $filename = $safeFilename . '-' . uniqid() . '.' . $profilePic->guessExtension();
+
+                    try {
+                        $profilePic->move(
+                            'uploads/teacher/',
+                            $filename
+                        );
+                        // Ici, nettoyage si il y a déjà une photo
+                        if ($teacher->getProfilePicFilename() !== null) {
+                            unlink(__DIR__ . "/../../public/uploads/teacher/" . $teacher->getProfilePicFilename());
+                        }
+                        $teacher->setProfilePicFilename($filename);
+                    } catch (FileException $e) {
+                        $form->addError(new FormError("Erreur lors de l'upload du fichier"));
                     }
-                    $teacher->setProfilePicFilename($filename);
-                } catch (FileException $e) {
-                    $form->addError(new FormError("Erreur lors de l'upload du fichier"));
                 }
+                $entityManager->persist($teacher);
+                $entityManager->persist($user);
+                $entityManager->flush();
+                $this->addFlash('success', 'Merci ! 🎉🎉 Votre inscription a bien été enregistré');
+
+                $mailConfirmation->sendNewsTeacher($user);
+
+                return $this->redirectToRoute('teacher_index');
             }
-            // Persist les deux entités
-            $entityManager->persist($teacher);
-            $entityManager->persist($user);
-            $entityManager->flush();
-            $this->addFlash('success', 'Merci ! 🎉🎉 Votre inscription a bien été enregistré');
-
-            $mailConfirmation->sendNewsTeacher($user);
-
-            return $this->redirectToRoute('teacher_index');  // Redirection après succès 
         }
 
         return $this->render('teacher/registration.html.twig', [
@@ -106,10 +115,12 @@ class TeacherController extends AbstractController
         // obliger de mettre cette annotation si non renvoi une instance de UserInterface et non de User
         $user = $this->getUser();
 
-        // Vérifie si le User est bien un Teacher
         if (!$this->isGranted('ROLE_TEACHER')) {
             throw $this->createAccessDeniedException('Vous n\'avez pas accès à cette section.');
         }
+        $categories = $entityManager->getRepository(Category::class)->findAll();
+
+        $subcategories = $entityManager->getRepository(SubCategory::class)->findAll();
 
         $teacher = $user->getTeacher();
         $lessons = $entityManager->getRepository(Lesson::class)->findBy(['teacher' => $teacher]);
@@ -117,6 +128,8 @@ class TeacherController extends AbstractController
         return $this->render('teacher/profile.html.twig', [
             'user' => $user,
             'lessons' => $lessons,
+            'categories' => $categories,
+            'subcategories' => $subcategories,
         ]);
     }
 
@@ -127,12 +140,10 @@ class TeacherController extends AbstractController
         EntityManagerInterface $entityManager,
         SluggerInterface $slugger
     ): Response {
-        // Récupére l'utilisateur associé à ce Teacher
         $user = $teacher->getUser();
 
         $form = $this->createForm(UserType::class, $user, ['is_edit' => true]); 
 
-        // Préremplir les champs non mappés avec les données de Teacher
         $form->get('lastName')->setData($teacher->getLastName());
         $form->get('firstName')->setData($teacher->getFirstName());
         $form->get('dateOfBirth')->setData($teacher->getDateOfBirth());
@@ -206,7 +217,6 @@ class TeacherController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $currentPassword = $form->get('currentPassword')->getData();
 
-            // Vérification du mot de passe actuel
             if (!$passwordHasher->isPasswordValid($user, $currentPassword)) {
                 $form->get('currentPassword')->addError(new FormError('Le mot de passe actuel est incorrect.'));
 
@@ -218,7 +228,6 @@ class TeacherController extends AbstractController
                 if ($newPassword !== $confirmPassword) {
                     $form->get('confirmPassword')->addError(new FormError('Les deux mots de passe ne correspondent pas.'));
                 } else {
-                    // Assigner le nouveau mot de passe
                     $user->setPassword($newPassword);
                     $entityManager->persist($user);
                     $entityManager->flush();
@@ -251,7 +260,6 @@ class TeacherController extends AbstractController
             return $this->redirectToRoute('teacher_profile');
         }
 
-        // Si il y a une entité Teacher associée à l'utilisateur, la supprime
         if ($teacher) {
             $entityManager->remove($teacher);
         }

@@ -17,6 +17,15 @@ class ResetPasswordType extends AbstractType
                 'constraints' => [
                     new NotBlank(['message' => 'Veuillez entrer un nouveau mot de passe.']),
                 ],
+            ])
+            ->add('confirmPassword', PasswordType::class, [
+                'label' => 'Confirmez le nouveau mot de passe',
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Veuillez confirmer votre nouveau mot de passe',
+                    ]),
+                ],
+                'mapped' => false,
             ]);
     }
 

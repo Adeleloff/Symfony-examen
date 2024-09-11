@@ -20,8 +20,6 @@ class LessonController extends AbstractController
     #[Route('/', name: 'lesson_index')]
     public function list(LessonRepository $lessonRepository): Response
     {
-        // $lessons = $lessonRepository->findAll();
-        // trier par date de création (plus récent ou plus vieux)
         $lessons = $lessonRepository->findBy([], ['createdAt' => 'DESC']);
 
         return $this->render('lesson/list.html.twig', [
@@ -117,7 +115,7 @@ class LessonController extends AbstractController
     public function delete(Request $request, Lesson $lesson, EntityManagerInterface $entityManager): Response
     {
         // Vérifie si le User connecté est bien l'auteur de la leçon
-        if ($lesson->getTeacher()->getUser() !== $this->getUser()) {
+        if ($lesson->getTeacher()->getUser() !== $this->getUser() && !$this->isGranted('ROLE_ADMIN')) {
             throw $this->createAccessDeniedException('Vous ne pouvez pas modifier cette leçon.');
         }
         

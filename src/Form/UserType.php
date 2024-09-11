@@ -13,6 +13,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Image;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class UserType extends AbstractType
 {
@@ -41,7 +42,17 @@ class UserType extends AbstractType
                     'class' => 'border border-gray-300 p-2 rounded w-full mb-4',
                     'placeholder' => 'Entrez votre mot de passe'
                 ],
-            ]);
+            ])
+            
+                ->add('confirmPassword', PasswordType::class, [
+                    'label' => 'Confirmez le nouveau mot de passe',
+                    'constraints' => [
+                        new NotBlank([
+                            'message' => 'Veuillez confirmer votre nouveau mot de passe',
+                        ]),
+                    ],
+                    'mapped' => false,
+                ]);
         }
 
         //seulement si c'est un User qu'on veut créer

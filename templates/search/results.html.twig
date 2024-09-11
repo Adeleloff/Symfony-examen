@@ -7,7 +7,7 @@
         <h1 class="text-3xl font-bold text-center mb-8">Résultats de recherche pour "{{ query }}"</h1>
 
         {% if lessons is empty %}
-            <p class="text-center text-gray-500">Aucun cours trouvé</p>
+            <p class="text-center text-gray-500">Aucune leçon trouvée</p>
         {% else %}
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {% for lesson in lessons %}
